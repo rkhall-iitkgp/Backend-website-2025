@@ -1,0 +1,16 @@
+{
+  "name": "rk-backend",
+  "version": "1.0.0",
+  "description": "rk-website-backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Avichal",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9",
+    "pg": "^8.13.1"
+  }
+}
