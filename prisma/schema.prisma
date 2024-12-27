@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Department {
+  AE
+  AG
+  AR
+  BT
+  CE
+  CH
+  CS
+  CY
+  EE
+  EC
+  EX
+  GG
+  HS
+  IM
+  MA
+  ME
+  MI
+  MT
+  NA
+  PH
+}
+
+model User {
+  id                        Int         @id @default(autoincrement())
+  rkId                      String      @unique @map("rk_id") @db.VarChar(8)
+  name                      String      @db.VarChar(100)
+  rollNumber                String      @unique @map("institute_roll_number") @db.VarChar(9)
+  phoneNumber               String      @unique @map("phone_number") @db.VarChar(10)
+  yearOfPassing             Int         @map("year_of_passing")
+  emailId                   String      @unique @map("email_id") @db.VarChar(100)
+  instituteEmailId          String?     @unique @map("institute_email_id") @db.VarChar(100)
+  dateOfBirth               DateTime    @map("date_of_birth") @db.Date
+  department                Department
+  emergencyMobileNumber     String?     @map("emergency_mobile_number") @db.VarChar(10)
+  roomNumber                String?     @map("room_number") @db.VarChar(10)
+  password                  String      @db.VarChar(255)
+  createdAt                 DateTime    @default(now()) @map("created_at")
+  isVerified                Boolean     @default(false)
+  verificationCode          String?     @db.VarChar(6)
+  verificationExpires       DateTime?
+
+  @@map("users")
+}
