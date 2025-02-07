@@ -17,12 +17,17 @@ export const registerSchema = z.object({
 
 export const verifyEmailSchema = z.object({
   emailId: z.string().email('Valid email is required'),
+  instituteEmailId: z.string().email('Valid institute email is required'),
   code: z.string().min(1, 'Verification code is required'),
 });
 
 export const loginSchema = z.object({
-  emailId: z.string().email('Valid email is required'),
+  emailId: z.string().email('Valid email is required').optional(),
+  instituteEmailId: z.string().email('Valid institute email is required').optional(),
   password: z.string().min(1, 'Password is required'),
+}).refine(data => data.emailId || data.instituteEmailId, {
+  message: 'Email address is required',
+  path: ['emailId', 'instituteEmailId'],
 });
 
 export const resendVerificationSchema = z.object({
