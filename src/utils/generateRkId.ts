@@ -1,7 +1,7 @@
 import { prisma } from '../lib/prisma';
 import { Department } from '../constants/departments';
 
-const rollNumberPattern = /^2\d[A-Z]{2}1\d{2}\d{2}$/;
+const rollNumberPattern = /^2\d[A-Z]{2}\d[\dA-Z]{2}\d{2}$/;
 
 export async function generateRkId(rollNumber: string): Promise<string> {
   const { batchYear, department } = parseRollNumber(rollNumber);
