@@ -56,10 +56,10 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    await sendVerificationEmail(data.emailId, verificationCode);
+    await sendVerificationEmail(data.instituteEmailId, verificationCode);
 
     res.status(201).json({
-      message: 'Registration successful. Please check your email for verification.',
+      message: 'Registration successful. Please check your institute email for verification.',
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -74,10 +74,10 @@ export const verifyEmail = async (req: Request, res: Response) => {
       return res.status(400).json({ errors: result.error.flatten().fieldErrors });
     }
 
-    const { emailId, code } = result.data;
+    const { instituteEmailId, code } = result.data;
 
     const user = await prisma.user.findUnique({
-      where: { emailId },
+      where: { instituteEmailId },
     });
 
     if (!user) {
@@ -120,7 +120,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ errors: result.error.flatten().fieldErrors });
     }
 
-    const { emailId, password } = result.data;
+    const { emailId, instituteEmailId, password } = result.data;
 
     const user = await prisma.user.findUnique({
       where: { emailId },
