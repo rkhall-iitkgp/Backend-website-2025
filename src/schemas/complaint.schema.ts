@@ -6,7 +6,7 @@ export const ComplaintSchema = z.object({
   description: z.string().min(1, "Description is required"),
   isOpen: z.boolean().default(true),
   responseMessage: z.string().optional(),
-  userId: z.number().optional(),
+  userId: z.number()
 });
 
 export type ComplaintInput = z.infer<typeof ComplaintSchema>;

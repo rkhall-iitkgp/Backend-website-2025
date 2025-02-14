@@ -1,5 +1,4 @@
 import { asyncHandler } from "../utils/asyncHandler";
-import { ApiError } from "../utils/apiError";
 import { uploadCloudinary } from "../utils/cloudinary";
 import { ApiResponse } from "../utils/apiResponse";
 import { prisma } from "../lib/prisma"; 
@@ -19,7 +18,7 @@ const raiseComplaint = asyncHandler(async (
   const { title, description } = req.body;
 
   if (!title || !description) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiResponse(400,'', "All fields are required");
   }
   console.log(req.files);
   let complaintImageLocalPath: string | undefined;
@@ -28,12 +27,12 @@ const raiseComplaint = asyncHandler(async (
   }
   console.log(complaintImageLocalPath);
   if (!complaintImageLocalPath) {
-    throw new ApiError(400, "Complaint Image is required");
+    throw new ApiResponse(400,'', "Complaint Image is required");
   }
 
   const complaintImage = await uploadCloudinary(complaintImageLocalPath);
   if (!complaintImage) {
-    throw new ApiError(500, "Something went wrong while uploading image");
+    throw new ApiResponse(500,'', "Something went wrong while uploading image");
   }
 
   const complaint = await prisma.complaint.create({
@@ -47,7 +46,7 @@ const raiseComplaint = asyncHandler(async (
   });
 
   if (!complaint) {
-    throw new ApiError(500, "Something went wrong while registering complaint");
+    throw new ApiResponse(500,'', "Something went wrong while registering complaint");
   }
 
   return res.status(201).json(
@@ -75,7 +74,7 @@ const getAllComplaints = asyncHandler(async (
   });
 
   if (!complaints || complaints.length === 0) {
-    throw new ApiError(404, "No Complaints found");
+    throw new ApiResponse(404,'', "No Complaints found");
   }
 
   return res.status(200).json(
@@ -104,7 +103,7 @@ const getComplaints = asyncHandler(async (
   });
 
   if (!complaints || complaints.length === 0) {
-    throw new ApiError(404, "No Complaints found");
+    throw new ApiResponse(404,'', "No Complaints found");
   }
 
   return res.status(200).json(

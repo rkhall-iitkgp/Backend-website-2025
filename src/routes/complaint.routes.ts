@@ -17,7 +17,7 @@ router.route("/add-rating").post(
     raiseComplaint
 )
 
-router.route("/all").get(
+router.route("/").get(
     verifyJWT,
     getAllComplaints
 )
