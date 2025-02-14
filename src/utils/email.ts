@@ -13,7 +13,6 @@ export const sendVerificationEmail = async (
   to: string,
   otp: string
 ) => {
-  console.log(process.env.SMTP_USER, process.env.SMTP_HOST);
   await transporter.sendMail({
     from: "verify@rkhall.in",
     to,
