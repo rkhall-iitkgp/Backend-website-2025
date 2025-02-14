@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
+  host: "smtp.gmail.com",
   port: 587,
   auth: {
     user: process.env.SMTP_USER,
@@ -13,8 +13,9 @@ export const sendVerificationEmail = async (
   to: string,
   otp: string
 ) => {
+  console.log(process.env.SMTP_USER, process.env.SMTP_HOST);
   await transporter.sendMail({
-    from: "verify@rkhall.in",
+    from: process.env.SMTP_USER,
     to,
     subject: 'Email Verification',
     html: `

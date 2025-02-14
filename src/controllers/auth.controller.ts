@@ -106,7 +106,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
       },
     });
 
-    res.json({ message: 'Email verified successfully' });
+    res.status(200).json({ message: 'Email verified successfully' });
   } catch (error) {
     console.error('Verification error:', error);
     res.status(500).json({ message: 'Verification failed' });
