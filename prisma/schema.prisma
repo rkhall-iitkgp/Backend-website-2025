@@ -48,6 +48,23 @@ model User {
   isVerified                Boolean     @default(false)
   verificationCode          String?     @db.VarChar(6)
   verificationExpires       DateTime?
+  complaints                Complaint[]
 
   @@map("users")
 }
+
+model Complaint {
+  id              Int       @id @default(autoincrement()) 
+  title           String    @db.VarChar(100)
+  description     String    @db.VarChar(1000)
+  complaintImage  String    
+  isOpen          Boolean   @default(true)
+  responseMessage String?   
+  userId        Int       
+  user          User      @relation(fields: [userId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("complaints") 
+}
+
