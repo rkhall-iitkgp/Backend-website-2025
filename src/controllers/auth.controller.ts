@@ -44,7 +44,7 @@ export const register = async (req: Request, res: Response) => {
     const rkId = await generateRkId(data.rollNumber);
     const department = data.rollNumber.slice(2, 4) as Department;
 
-    await prisma.user.create({
+    await prisma.tempUser.create({
       data: {
         ...data,
         rkId,
@@ -75,37 +75,52 @@ export const verifyEmail = async (req: Request, res: Response) => {
     }
 
     const { emailId, code } = result.data;
-
     const user = await prisma.user.findUnique({
       where: { emailId },
     });
+    if (user){
+      return res.status(400).json({ message: 'Email already verified' });
+    }
+    const tempuser = await prisma.tempUser.findUnique({
+      where: { emailId },
+    });
 
-    if (!user) {
+    if (!tempuser) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    if (user.isVerified) {
-      return res.status(400).json({ message: 'Email already verified' });
-    }
-
     if (
-      !user.verificationCode ||
-      user.verificationCode !== code ||
-      !user.verificationExpires ||
-      user.verificationExpires < new Date()
+      !tempuser.verificationCode ||
+      tempuser.verificationCode !== code ||
+      !tempuser.verificationExpires ||
+      tempuser.verificationExpires < new Date()
     ) {
       return res.status(400).json({ message: 'Invalid or expired verification code' });
     }
-
-    await prisma.user.update({
-      where: { id: user.id },
+    const ver_user = {
+      name: tempuser.name,
+      rollNumber: tempuser.rollNumber,
+      phoneNumber: tempuser.phoneNumber,
+      rkId: tempuser.rkId,
+      department: tempuser.department,
+      emailId: tempuser.emailId,
+      instituteEmailId: tempuser.instituteEmailId,
+      yearOfPassing: tempuser.yearOfPassing,
+      dateOfBirth: tempuser.dateOfBirth,
+      emergencyMobileNumber: tempuser.emergencyMobileNumber,
+      roomNumber: tempuser.roomNumber,
+      password: tempuser.password,
+    }
+    await prisma.user.create({
       data: {
-        isVerified: true,
-        verificationCode: null,
-        verificationExpires: null,
+        ...ver_user,
+
       },
     });
 
+    await prisma.tempUser.delete({
+      where: { emailId },
+    });
     res.status(200).json({ message: 'Email verified successfully' });
   } catch (error) {
     console.error('Verification error:', error);
@@ -125,15 +140,20 @@ export const login = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
       where: { emailId },
     });
+    const tempuser = await prisma.tempUser.findUnique({
+      where: { emailId },
+    });
+    if (!user && !tempuser) {
+      return res.status(401).json({ message: 'Invalid credentials ' });
+    }
+
+    if (!user && tempuser) {
+      return res.status(401).json({ message: 'Please verify your email first' });
+    }
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
-    if (!user.isVerified) {
-      return res.status(401).json({ message: 'Please verify your email first' });
-    }
-
     const isValidPassword = await comparePasswords(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -176,20 +196,26 @@ export const resendVerification = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
       where: { emailId },
     });
-
-    if (!user) {
+    const tempuser = await prisma.tempUser.findUnique({
+      where: { emailId },
+    });
+    if (!user && !tempuser) {
       return res.status(404).json({ message: 'User not found' });
     }
-
-    if (user.isVerified) {
+  
+    if (user) {
       return res.status(400).json({ message: 'Email already verified' });
+    }
+
+    if (!tempuser) {
+      return res.status(404).json({ message: 'Temporary user not found' });
     }
 
     const verificationCode = generateOTP();
     const verificationExpires = new Date(Date.now() + VERIFICATION_CODE_EXPIRY);
 
-    await prisma.user.update({
-      where: { id: user.id },
+    await prisma.tempUser.update({
+      where: { id: tempuser.id },
       data: {
         verificationCode,
         verificationExpires,

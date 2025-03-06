@@ -51,7 +51,6 @@ export const verifyJWT = asyncHandler(async (
        department: true,
        emergencyMobileNumber: true,
        roomNumber: true,
-       isVerified: true,
        createdAt: true,
      }
    });
